@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "819921094001",
+    "firebase_url": "https://flutter-habit-tracker-89a21.firebaseio.com",
+    "project_id": "flutter-habit-tracker-89a21",
+    "storage_bucket": "flutter-habit-tracker-89a21.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:819921094001:android:3c9a924d4b81cd8ea5a2d0",
+        "android_client_info": {
+          "package_name": "com.sf.Habit_Tracker_f"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "819921094001-s10j75vlodf0bjb4pk1v4kmaeg2ajeas.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_QIp4q7LOQpQzN3l6gthJb1QmDSoIyxg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "819921094001-s10j75vlodf0bjb4pk1v4kmaeg2ajeas.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
