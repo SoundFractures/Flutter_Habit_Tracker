@@ -1,16 +1,21 @@
 class Habit {
-  final String id;
-  final String userId;
-  final String name;
-  final String description;
-  final String recurrence;
-  final String progress;
+  String id; //From DB
+  String userId; //From DB
+  String name;
+  String description;
+  List<String> activeDays;
+  int progress; //From DB
+  int goal;
+  DateTime date;
 
-  Habit(
-      {this.id,
-      this.name,
-      this.description,
-      this.recurrence,
-      this.progress,
-      this.userId});
+  Habit({
+    this.id,
+    this.name,
+    this.description,
+    this.activeDays,
+    this.progress,
+    this.goal,
+    this.userId,
+    this.date,
+  });
 }

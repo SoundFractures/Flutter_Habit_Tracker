@@ -1,3 +1,4 @@
+import 'package:Habit_Tracker_f/Views/Profile/profile.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:Habit_Tracker_f/Views/Habits/habits.dart';
 import 'package:Habit_Tracker_f/Views/Today/today.dart';
@@ -10,24 +11,33 @@ class Menu extends StatefulWidget {
 }
 
 class _MenuState extends State<Menu> {
-  int bottomSelectedIndex = 1;
-
-  List<Widget> buildBottomNavBarItems() {
+  int bottomSelectedIndex = 0;
+  Color bottomSelectedColor = Colors.green;
+  List<BottomNavigationBarItem> buildBottomNavBarItems() {
     return [
-      Icon(
-        Icons.home,
-        size: 20,
-        color: Colors.white,
+      BottomNavigationBarItem(
+        title: Text("Habits"),
+        icon: Icon(
+          Icons.home,
+        ),
       ),
-      Icon(
-        Icons.search,
-        size: 20,
-        color: Colors.white,
+      BottomNavigationBarItem(
+        title: Text("Today"),
+        icon: Icon(
+          Icons.check_box,
+        ),
       ),
-      Icon(
-        Icons.info,
-        size: 20,
-        color: Colors.white,
+      BottomNavigationBarItem(
+        title: Text("Tomorrow"),
+        icon: Icon(
+          Icons.schedule,
+        ),
+      ),
+      BottomNavigationBarItem(
+        title: Text("Profile"),
+        icon: Icon(
+          Icons.account_circle,
+        ),
       ),
     ];
   }
@@ -48,6 +58,7 @@ class _MenuState extends State<Menu> {
         HabitsView(),
         TodayView(),
         TomorrowView(),
+        ProfileView()
       ],
     );
   }
@@ -55,6 +66,15 @@ class _MenuState extends State<Menu> {
   void pageChanged(int index) {
     setState(() {
       bottomSelectedIndex = index;
+      if (index == 0) {
+        bottomSelectedColor = Colors.green;
+      } else if (index == 1) {
+        bottomSelectedColor = Colors.blue;
+      } else if (index == 2) {
+        bottomSelectedColor = Colors.red;
+      } else if (index == 3) {
+        bottomSelectedColor = Colors.yellow;
+      }
     });
   }
 
@@ -62,7 +82,7 @@ class _MenuState extends State<Menu> {
     setState(() {
       bottomSelectedIndex = index;
       pageController.animateToPage(index,
-          duration: Duration(milliseconds: 500), curve: Curves.ease);
+          duration: Duration(milliseconds: 150), curve: Curves.ease);
     });
   }
 
@@ -70,15 +90,17 @@ class _MenuState extends State<Menu> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: buildPageView(),
-      bottomNavigationBar: CurvedNavigationBar(
-        index: 1,
-        color: Colors.blue,
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        currentIndex: bottomSelectedIndex,
+        selectedItemColor: bottomSelectedColor,
+        //color: Colors.blue,
         backgroundColor: Colors.white,
-        buttonBackgroundColor: Colors.blue,
-        height: 50,
+        //buttonBackgroundColor: Colors.blue,
+        //height: 50,
         items: buildBottomNavBarItems(),
-        animationDuration: Duration(milliseconds: 150),
-        animationCurve: Curves.bounceInOut,
+        //animationDuration: Duration(milliseconds: 100),
+        //animationCurve: Curves.bounceInOut,
         onTap: (index) {
           debugPrint("Current Index:" + index.toString());
           bottomTapped(index);
