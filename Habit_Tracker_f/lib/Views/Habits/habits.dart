@@ -1,5 +1,6 @@
 import 'package:Habit_Tracker_f/Models/habit.dart';
 import 'package:Habit_Tracker_f/Services/database.dart';
+import 'package:Habit_Tracker_f/Views/Habits/addHabit.dart';
 import 'package:Habit_Tracker_f/Views/Habits/editHabit.dart';
 import 'package:Habit_Tracker_f/Views/Habits/habitCard.dart';
 import 'package:flutter/material.dart';
@@ -23,11 +24,12 @@ class _HabitsViewState extends State<HabitsView> {
         backgroundColor: Colors.white,
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            Navigator.push(
+            DatabaseService(uid: user.uid).checkHabits(DateTime.now());
+            /*Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => EditHabitView(title: "Add Habit")),
-            );
+                  builder: (context) => AddHabitView(title: "Add Habit")),
+            );*/
           },
           child: Icon(Icons.add),
           backgroundColor: Colors.green,
@@ -57,8 +59,70 @@ class _HabitsViewState extends State<HabitsView> {
                     listOfHabits = snapshot.data;
                     return SliverList(
                         delegate: SliverChildBuilderDelegate((context, index) {
-                      return HabitCard(
-                        habit: listOfHabits[index],
+                      return InkWell(
+                        onLongPress: () async {
+                          final bool res = await showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(width * 0.050)),
+                                  title: Text(
+                                    "Delete ${listOfHabits[index].name}?",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.grey[700]),
+                                  ),
+                                  backgroundColor: Colors.white,
+                                  content: Text(
+                                    "This will delete ...",
+                                    style: TextStyle(color: Colors.grey[700]),
+                                  ),
+                                  actions: <Widget>[
+                                    FlatButton(
+                                      child: Text(
+                                        "Cancel",
+                                        style:
+                                            TextStyle(color: Colors.grey[500]),
+                                      ),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                    FlatButton(
+                                      child: Text(
+                                        "Delete",
+                                        style: TextStyle(color: Colors.red),
+                                      ),
+                                      onPressed: () {
+                                        DatabaseService(uid: user.uid)
+                                            .removeHabit(listOfHabits[index]);
+                                        Navigator.of(context).pop();
+                                        setState(() {
+                                          listOfHabits.removeAt(index);
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                );
+                              });
+                          return res;
+                        },
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => EditHabitView(
+                                      title: listOfHabits[index].name,
+                                      habit: listOfHabits[index],
+                                    )),
+                          );
+                        },
+                        child: HabitCard(
+                          habit: listOfHabits[index],
+                        ),
                       );
                     }, childCount: listOfHabits.length));
                   } else {

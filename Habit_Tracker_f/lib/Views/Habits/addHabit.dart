@@ -6,16 +6,16 @@ import 'package:numberpicker/numberpicker.dart';
 import 'package:Habit_Tracker_f/Services/database.dart';
 import 'package:Habit_Tracker_f/Views/Core/dayInWeek.dart';
 
-class EditHabitView extends StatefulWidget {
+class AddHabitView extends StatefulWidget {
   final String title;
-  final Habit habit;
-  const EditHabitView({Key key, this.title, this.habit}) : super(key: key);
+
+  const AddHabitView({Key key, this.title}) : super(key: key);
 
   @override
-  _EditHabitViewState createState() => _EditHabitViewState();
+  _AddHabitViewState createState() => _AddHabitViewState();
 }
 
-class _EditHabitViewState extends State<EditHabitView> {
+class _AddHabitViewState extends State<AddHabitView> {
   List<DayInWeek> daysInWeek = [
     DayInWeek(0, "M", "Monday", false),
     DayInWeek(1, "T", "Tuesday", false),
@@ -35,15 +35,6 @@ class _EditHabitViewState extends State<EditHabitView> {
   int goal = 10;
 
   @override
-  void initState() {
-    super.initState();
-    if (widget.habit != null) {
-      _controllerName.text = widget.habit.name;
-      _controllerDesc.text = widget.habit.description;
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     final user = Provider.of<User>(context);
     final height = MediaQuery.of(context).size.height;
@@ -52,12 +43,19 @@ class _EditHabitViewState extends State<EditHabitView> {
       child: Scaffold(
         floatingActionButton: FloatingActionButton(
           onPressed: () {
+            //Navigator.pop(context);
             if (_controllerDesc.text.isNotEmpty &&
-                _controllerName.text.isNotEmpty) {
-              widget.habit.name = _controllerName.text;
-              widget.habit.description = _controllerDesc.text;
+                _controllerName.text.isNotEmpty &&
+                activeDays.length != 0) {
+              Habit endHabit = Habit();
 
-              DatabaseService(uid: user.uid).updateHabit(widget.habit);
+              endHabit.name = _controllerName.text;
+              endHabit.description = _controllerDesc.text;
+              endHabit.activeDays = activeDays;
+              endHabit.goal = goal;
+              endHabit.date = DateTime.now();
+
+              DatabaseService(uid: user.uid).addHabit(endHabit);
               Navigator.pop(context);
             }
           },
@@ -148,7 +146,7 @@ class _EditHabitViewState extends State<EditHabitView> {
                       height: 20.0,
                     ),
                     Text(
-                      "Reacurrance: ",
+                      "Select Reacurrance: ",
                       style: TextStyle(color: Colors.grey[700]),
                     ),
                     SizedBox(
@@ -160,6 +158,18 @@ class _EditHabitViewState extends State<EditHabitView> {
                         return InkWell(
                           splashColor: Colors.transparent,
                           highlightColor: Colors.transparent,
+                          onTap: () {
+                            setState(() {
+                              daysInWeek[day.index].checked =
+                                  !daysInWeek[day.index].checked;
+
+                              if (daysInWeek[day.index].checked) {
+                                activeDays.add(day.name);
+                              } else {
+                                activeDays.remove(day.name);
+                              }
+                            });
+                          },
                           child: Padding(
                             padding: EdgeInsets.all(2.0),
                             child: Container(
@@ -167,8 +177,7 @@ class _EditHabitViewState extends State<EditHabitView> {
                               height: width * 0.11,
                               child: Container(
                                 decoration: new BoxDecoration(
-                                    color: widget.habit.activeDays.contains(
-                                            daysInWeek[day.index].name)
+                                    color: daysInWeek[day.index].checked
                                         ? Colors.green
                                         : Colors.white,
                                     shape: BoxShape.rectangle,
@@ -181,8 +190,7 @@ class _EditHabitViewState extends State<EditHabitView> {
                                     child: Text(
                                   daysInWeek[day.index].letter,
                                   style: TextStyle(
-                                      color: widget.habit.activeDays.contains(
-                                              daysInWeek[day.index].name)
+                                      color: daysInWeek[day.index].checked
                                           ? Colors.white
                                           : Colors.grey[700],
                                       fontWeight: FontWeight.bold),
@@ -194,52 +202,39 @@ class _EditHabitViewState extends State<EditHabitView> {
                       }).toList(),
                     ),
                     SizedBox(
-                      height: width * 0.066,
+                      height: 20.0,
                     ),
-                    LinearProgressIndicator(
-                      value:
-                          ((widget.habit.progress * 100) / widget.habit.goal) /
-                              100,
-                      backgroundColor: Colors.grey[100],
-                      valueColor: AlwaysStoppedAnimation(
-                        Colors.green,
-                      ),
+                    Text(
+                      "Select amount of Days: ",
+                      style: TextStyle(color: Colors.grey[700]),
                     ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              (((widget.habit.progress * 100) /
-                                              widget.habit.goal)
-                                          .round())
-                                      .toString() +
-                                  "%",
-                              style: TextStyle(
-                                  color: Colors.grey[400],
-                                  fontSize: height * 0.022),
+                    SizedBox(
+                      height: 15.0,
+                    ),
+                    Center(
+                      child: NumberPicker.integer(
+                          decoration: new BoxDecoration(
+                            border: new Border(
+                              top: new BorderSide(
+                                style: BorderStyle.solid,
+                                color: Colors.black26,
+                              ),
+                              bottom: new BorderSide(
+                                style: BorderStyle.solid,
+                                color: Colors.black26,
+                              ),
                             ),
-                          ],
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              (widget.habit.progress).toString() +
-                                  " / " +
-                                  widget.habit.goal.toString() +
-                                  " Tasks",
-                              style: TextStyle(
-                                  color: Colors.grey[400],
-                                  fontSize: height * 0.022),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                          ),
+                          initialValue: goal,
+                          minValue: 0,
+                          maxValue: 100,
+                          highlightSelectedValue: false,
+                          onChanged: (value) {
+                            setState(() {
+                              goal = value;
+                            });
+                          }),
+                    )
                   ],
                 ),
               ),

@@ -27,14 +27,13 @@ class _HabitCardState extends State<HabitCard> {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
     return Container(
-      height: 100,
       padding: EdgeInsets.only(left: 10.0, right: 10),
       decoration: BoxDecoration(
           border: Border.all(width: 0.03, color: Colors.grey[700])),
       child: Column(
         children: <Widget>[
           SizedBox(
-            height: 15,
+            height: width * 0.036,
           ),
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -89,7 +88,26 @@ class _HabitCardState extends State<HabitCard> {
             ],
           ),
           SizedBox(
-            height: 15,
+            height: width * 0.018,
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    widget.habit.description,
+                    style: TextStyle(
+                        color: Colors.grey[400], fontSize: height * 0.022),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          SizedBox(
+            height: width * 0.016,
           ),
           LinearProgressIndicator(
             value: ((widget.habit.progress * 100) / widget.habit.goal) / 100,
@@ -106,14 +124,32 @@ class _HabitCardState extends State<HabitCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    widget.habit.name,
+                    (((widget.habit.progress * 100) / widget.habit.goal)
+                                .round())
+                            .toString() +
+                        "%",
                     style: TextStyle(
                         color: Colors.grey[400], fontSize: height * 0.022),
                   ),
                 ],
               ),
-              Row()
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    (widget.habit.progress).toString() +
+                        " / " +
+                        widget.habit.goal.toString() +
+                        " Tasks",
+                    style: TextStyle(
+                        color: Colors.grey[400], fontSize: height * 0.022),
+                  ),
+                ],
+              ),
             ],
+          ),
+          SizedBox(
+            height: width * 0.036,
           ),
         ],
       ),

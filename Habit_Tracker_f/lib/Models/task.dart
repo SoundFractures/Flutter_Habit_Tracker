@@ -1,16 +1,22 @@
 class Task {
-  final String id;
-  final String userId;
-  final String habitId;
-  final DateTime dateTime;
-  final String description;
-  final List<String> checklist;
+  String id;
+  String userId;
+  String habitId;
+  DateTime date;
+  String name;
+  String description;
+  List<String> checklist;
+  bool edited;
+  bool completed;
 
   Task(
       {this.id,
       this.userId,
+      this.name,
       this.habitId,
-      this.dateTime,
+      this.date,
       this.description,
+      this.edited,
+      this.completed,
       this.checklist});
 }
