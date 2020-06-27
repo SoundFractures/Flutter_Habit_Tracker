@@ -1,3 +1,6 @@
+import 'package:Habit_Tracker_f/Models/task.dart';
+import 'package:Habit_Tracker_f/Services/database.dart';
+import 'package:Habit_Tracker_f/Views/Today/taskCard.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:Habit_Tracker_f/Models/user.dart';
@@ -8,6 +11,7 @@ class TodayView extends StatefulWidget {
 }
 
 class _TodayViewState extends State<TodayView> {
+  List<Task> listOfTasks = [];
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<User>(context);
@@ -26,27 +30,51 @@ class _TodayViewState extends State<TodayView> {
                 actions: <Widget>[],
                 flexibleSpace: FlexibleSpaceBar(
                   centerTitle: true,
-                  title: Text("Today",
+                  title: Text("Tasks Today",
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: 20.0,
                           fontWeight: FontWeight.w500)),
                   collapseMode: CollapseMode.parallax,
                 )),
-            SliverGrid(
-              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 400.0,
-                mainAxisSpacing: 10.0,
-                crossAxisSpacing: 10.0,
-                childAspectRatio: 3.0,
-              ),
-              delegate: SliverChildBuilderDelegate(
-                (BuildContext context, int index) {
-                  return Container();
-                },
-                childCount: 10,
-              ),
-            ),
+            StreamBuilder<List<Task>>(
+                stream: DatabaseService(uid: user.uid).tasks,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    print(snapshot.data);
+                    listOfTasks = snapshot.data;
+                    return SliverList(
+                        delegate: SliverChildBuilderDelegate((context, index) {
+                      return InkWell(
+                        onTap: () {
+                          /*
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => EditTaskView(
+                                      title: listOfTasks[index].name,
+                                      habit: listOfTasks[index],
+                                    )),
+                          );
+                          */
+                        },
+                        child: TaskCard(task: listOfTasks[index]),
+                      );
+                    }, childCount: listOfTasks.length));
+                  } else {
+                    print(snapshot);
+                    return SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          return Container(
+                              height: 50,
+                              color: Colors.teal[100 * (index % 9)]);
+                        },
+                        childCount: 1,
+                      ),
+                    );
+                  }
+                })
           ],
         ));
   }

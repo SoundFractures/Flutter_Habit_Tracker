@@ -67,8 +67,135 @@ class DatabaseService {
   }
 
   //Tasks
-  //Check if any tasks are overdoo
-  Future checkForOverdooTasks(DateTime dateTime) {
+  List<Task> _tasksFromSnapshot(QuerySnapshot snapshot) {
+    return snapshot.documents.map((doc) {
+      Timestamp t = doc.data['date'];
+      DateTime d = t.toDate();
+      return Task(
+          id: doc.documentID,
+          name: doc.data['name'],
+          description: doc.data['description'],
+          habitId: doc.data['habitId'],
+          userId: doc.data['userId'],
+          date: d,
+          checklist: List.from(doc.data['checklist']),
+          completed: doc.data['completed'],
+          edited: doc.data['edited']);
+    }).toList();
+  }
+
+  Stream<List<Task>> get tasks {
+    return taskCollection
+        .where('userId', isEqualTo: uid)
+        .snapshots()
+        .map(_tasksFromSnapshot);
+  }
+
+  //Check Habits
+  Future checkHabitsForNewTasks(DateTime today) async {
+    final DateTime tomorrow = today.add(new Duration(days: 1));
+    final String tomorrowDay = DateFormat('EEEE').format(tomorrow);
+
+    List<Task> listOfTasks = [];
+    await taskCollection
+        .where('userId', isEqualTo: uid)
+        .getDocuments()
+        .then((snapshot) {
+      listOfTasks = _tasksFromSnapshot(snapshot);
+    });
+
+    await habitCollection
+        .where('userId', isEqualTo: uid)
+        .getDocuments()
+        .then((snapshot) {
+      List<Habit> listOfHabits = _habitsFromSnapshot(snapshot);
+
+      for (Habit habit in listOfHabits) {
+        if (habit.activeDays.contains(tomorrowDay)) {
+          if (listOfTasks.length == 0) {
+            addTask(habit: habit);
+            continue;
+          }
+          if ((listOfTasks.singleWhere(
+                  (task) =>
+                      task.habitId == habit.id && task.date.day == tomorrow.day,
+                  orElse: () => null)) ==
+              null) {
+            addTask(habit: habit);
+          } else {
+            //Habit task doesn't exsist
+
+          }
+        }
+      }
+    });
+  }
+
+  Future checkOverdooTasks(DateTime today) async {
+    DateTime weekAgo = today.subtract(new Duration(days: 1));
+    DateTime weekAgoAtZero =
+        DateTime(weekAgo.year, weekAgo.month, weekAgo.day, 0, 0, 0, 0);
+    List<Task> listOfTasks = [];
+    await taskCollection
+        .where('userId', isEqualTo: uid)
+        .getDocuments()
+        .then((snapshot) {
+      listOfTasks = _tasksFromSnapshot(snapshot);
+    });
+
+    for (Task task in listOfTasks) {
+      if (task.date.isBefore(weekAgoAtZero)) {
+        print("OVERDOO Task: " + task.name);
+        Firestore.instance.collection('Tasks').document(task.id).delete();
+      }
+    }
+  }
+
+  Future addTask({Habit habit}) async {
+    await Firestore.instance.collection('Tasks').add({
+      'userId': uid,
+      'habitId': habit.id,
+      'date': DateTime.now().add(new Duration(days: 1)),
+      'name': habit.name + " Task",
+      'description': habit.description,
+      'checklist': [],
+      'edited': false,
+      'completed': false
+    });
+  }
+}
+
+/*
+
+*/
+//Get All habits: 1
+//Check if habit has "today" in activeDays: 1
+//  Check if habit task is already created && Check if habit date is equal to this date (then don't create task): 0
+//
+
+//Check if habit has "tomorrow" in activeDays: 1
+
+//ds.reference.updateData({'iconCode': iconCode});
+
+/*
+for (DocumentSnapshot doc in snapshot.documents) {
+        Timestamp t = doc.data['date'];
+        DateTime d = t.toDate();
+        Task task = Task(
+            id: doc.documentID,
+            name: doc.data['name'],
+            description: doc.data['description'],
+            habitId: doc.data['habitId'],
+            userId: doc.data['userId'],
+            date: d,
+            checklist: doc.data['checklist'],
+            completed: doc.data['completed'],
+            edited: doc.data['edited']);
+        listOfTasks.add(task);
+      }
+
+
+Future checkForOverdooTasks(DateTime dateTime) {
     print(dateTime);
   }
 
@@ -85,29 +212,7 @@ class DatabaseService {
     });
   }
 
-  List<Task> _tasksFromSnapshot(QuerySnapshot snapshot) {
-    return snapshot.documents.map((doc) {
-      Timestamp t = doc.data['date'];
-      DateTime d = t.toDate();
-      return Task(
-          id: doc.documentID,
-          name: doc.data['name'],
-          description: doc.data['description'],
-          habitId: doc.data['habitId'],
-          userId: doc.data['userId'],
-          date: d,
-          checklist: doc.data['checklist'],
-          completed: doc.data['completed'],
-          edited: doc.data['edited']);
-    }).toList();
-  }
-
-  Stream<List<Task>> get tasks {
-    return taskCollection
-        .where('user_id', isEqualTo: uid)
-        .snapshots()
-        .map(_tasksFromSnapshot);
-  }
+  
 
   //Edit Task (On TomorrowView)
   Future checkHabits(DateTime today) async {
@@ -157,31 +262,4 @@ class DatabaseService {
       }
     });
   }
-}
-
-//Get All habits: 1
-//Check if habit has "today" in activeDays: 1
-//  Check if habit task is already created && Check if habit date is equal to this date (then don't create task): 0
-//
-
-//Check if habit has "tomorrow" in activeDays: 1
-
-//ds.reference.updateData({'iconCode': iconCode});
-
-/*
-for (DocumentSnapshot doc in snapshot.documents) {
-        Timestamp t = doc.data['date'];
-        DateTime d = t.toDate();
-        Task task = Task(
-            id: doc.documentID,
-            name: doc.data['name'],
-            description: doc.data['description'],
-            habitId: doc.data['habitId'],
-            userId: doc.data['userId'],
-            date: d,
-            checklist: doc.data['checklist'],
-            completed: doc.data['completed'],
-            edited: doc.data['edited']);
-        listOfTasks.add(task);
-      }
 */

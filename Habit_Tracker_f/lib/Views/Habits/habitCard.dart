@@ -1,6 +1,5 @@
 import 'package:Habit_Tracker_f/Models/habit.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:Habit_Tracker_f/Views/Core/dayInWeek.dart';
 
 class HabitCard extends StatefulWidget {

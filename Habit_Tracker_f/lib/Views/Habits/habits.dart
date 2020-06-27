@@ -24,12 +24,11 @@ class _HabitsViewState extends State<HabitsView> {
         backgroundColor: Colors.white,
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            DatabaseService(uid: user.uid).checkHabits(DateTime.now());
-            /*Navigator.push(
+            Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (context) => AddHabitView(title: "Add Habit")),
-            );*/
+            );
           },
           child: Icon(Icons.add),
           backgroundColor: Colors.green,
@@ -134,7 +133,7 @@ class _HabitsViewState extends State<HabitsView> {
                               height: 50,
                               color: Colors.teal[100 * (index % 9)]);
                         },
-                        childCount: 50,
+                        childCount: 1,
                       ),
                     );
                   }
