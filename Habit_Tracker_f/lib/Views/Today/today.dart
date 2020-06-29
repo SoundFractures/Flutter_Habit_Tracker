@@ -1,6 +1,8 @@
 import 'package:Habit_Tracker_f/Models/task.dart';
 import 'package:Habit_Tracker_f/Services/database.dart';
+import 'package:Habit_Tracker_f/Views/Today/editTask.dart';
 import 'package:Habit_Tracker_f/Views/Today/taskCard.dart';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:Habit_Tracker_f/Models/user.dart';
@@ -27,6 +29,7 @@ class _TodayViewState extends State<TodayView> {
                 snap: false,
                 floating: false,
                 expandedHeight: 150.0,
+                backgroundColor: Colors.green,
                 actions: <Widget>[],
                 flexibleSpace: FlexibleSpaceBar(
                   centerTitle: true,
@@ -41,24 +44,21 @@ class _TodayViewState extends State<TodayView> {
                 stream: DatabaseService(uid: user.uid).tasks,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    print(snapshot.data);
                     listOfTasks = snapshot.data;
                     return SliverList(
                         delegate: SliverChildBuilderDelegate((context, index) {
                       return InkWell(
                         onTap: () {
-                          /*
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => EditTaskView(
                                       title: listOfTasks[index].name,
-                                      habit: listOfTasks[index],
+                                      task: listOfTasks[index],
                                     )),
                           );
-                          */
                         },
-                        child: TaskCard(task: listOfTasks[index]),
+                        child: TaskCardView(task: listOfTasks[index]),
                       );
                     }, childCount: listOfTasks.length));
                   } else {

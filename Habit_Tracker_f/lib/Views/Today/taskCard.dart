@@ -1,58 +1,72 @@
 import 'package:Habit_Tracker_f/Models/task.dart';
+import 'package:Habit_Tracker_f/Services/database.dart';
 import 'package:flutter/material.dart';
 
-class TaskCard extends StatefulWidget {
+class TaskCardView extends StatefulWidget {
   final Task task;
-  const TaskCard({Key key, this.task}) : super(key: key);
+  const TaskCardView({Key key, this.task}) : super(key: key);
   @override
-  _TaskCardState createState() => _TaskCardState();
+  _TaskCardViewState createState() => _TaskCardViewState();
 }
 
-class _TaskCardState extends State<TaskCard> {
+class _TaskCardViewState extends State<TaskCardView> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
     return Container(
-      padding: EdgeInsets.only(left: 10.0, right: 10),
+      padding: EdgeInsets.only(left: width * 0.05, right: width * 0.05),
       decoration: BoxDecoration(
           border: Border.all(width: 0.03, color: Colors.grey[700])),
-      child: Column(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          SizedBox(
-            height: width * 0.036,
-          ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              Column(
+              SizedBox(
+                height: width * 0.036,
+              ),
+              Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
                     widget.task.name,
                     style: TextStyle(
-                        color: Colors.grey[700],
-                        fontWeight: FontWeight.bold,
-                        fontSize: height * 0.03),
+                        color: widget.task.completed
+                            ? Colors.grey[300]
+                            : Colors.grey[700],
+                        fontSize: height * 0.027),
                   ),
                 ],
               ),
+              SizedBox(
+                height: width * 0.036,
+              ),
             ],
           ),
-          SizedBox(
-            height: width * 0.016,
-          ),
-          LinearProgressIndicator(
-            value: 0.4,
-            backgroundColor: Colors.grey[100],
-            valueColor: AlwaysStoppedAnimation(
-              Colors.green,
-            ),
-          ),
-          SizedBox(
-            height: width * 0.036,
-          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              InkWell(
+                onTap: () {
+                  DatabaseService().handleTaskCompletion(
+                      widget.task, !widget.task.completed);
+                },
+                child: widget.task.completed
+                    ? Icon(
+                        Icons.check_box,
+                        color: Colors.grey[300],
+                        size: width * 0.08,
+                      )
+                    : Icon(
+                        Icons.check_box_outline_blank,
+                        color: Colors.grey[600],
+                        size: width * 0.08,
+                      ),
+              ),
+            ],
+          )
         ],
       ),
     );
@@ -91,4 +105,8 @@ Row(
               ),
             ],
           ),
+
+
+
+          
 */

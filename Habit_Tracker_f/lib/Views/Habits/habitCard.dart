@@ -26,7 +26,7 @@ class _HabitCardState extends State<HabitCard> {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
     return Container(
-      padding: EdgeInsets.only(left: 10.0, right: 10),
+      padding: EdgeInsets.only(left: width * 0.05, right: width * 0.05),
       decoration: BoxDecoration(
           border: Border.all(width: 0.03, color: Colors.grey[700])),
       child: Column(
@@ -46,7 +46,7 @@ class _HabitCardState extends State<HabitCard> {
                     style: TextStyle(
                         color: Colors.grey[700],
                         fontWeight: FontWeight.bold,
-                        fontSize: height * 0.03),
+                        fontSize: height * 0.028),
                   ),
                 ],
               ),
@@ -76,7 +76,7 @@ class _HabitCardState extends State<HabitCard> {
                               color: widget.habit.activeDays
                                       .contains(daysInWeek[day.index].name)
                                   ? Colors.white
-                                  : Colors.grey[700],
+                                  : Colors.grey[500],
                               fontWeight: FontWeight.bold),
                         )),
                       ),

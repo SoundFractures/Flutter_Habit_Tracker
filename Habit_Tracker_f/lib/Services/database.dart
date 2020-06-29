@@ -1,7 +1,11 @@
+import 'dart:convert';
+
+import 'package:Habit_Tracker_f/Views/Core/dayInWeek.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:Habit_Tracker_f/Models/habit.dart';
 import 'package:Habit_Tracker_f/Models/task.dart';
 import 'package:Habit_Tracker_f/Models/user.dart';
+import 'package:Habit_Tracker_f/Models/checkItem.dart';
 import 'package:intl/intl.dart';
 
 class DatabaseService {
@@ -50,6 +54,7 @@ class DatabaseService {
       'date': habit.date,
       'progress': 0,
     });
+    checkHabitsForNewTasks(DateTime.now());
   }
 
   //Edit Habit
@@ -61,9 +66,16 @@ class DatabaseService {
   }
 
   //Remove Habit (Also Removes Tasks)
-  Future removeHabit(Habit habit) {
-    print(habit.id);
+  Future removeHabit(Habit habit) async {
     Firestore.instance.collection('Habits').document(habit.id).delete();
+    await taskCollection
+        .where('habitId', isEqualTo: habit.id)
+        .getDocuments()
+        .then((snapshot) {
+      for (DocumentSnapshot ds in snapshot.documents) {
+        ds.reference.delete();
+      }
+    });
   }
 
   //Tasks
@@ -91,10 +103,19 @@ class DatabaseService {
         .map(_tasksFromSnapshot);
   }
 
+  // Task Complete
+  Future handleTaskCompletion(Task task, bool completed) async {
+    await taskCollection.document(task.id).updateData({'completed': completed});
+    DocumentSnapshot documentSnapshot =
+        await habitCollection.document(task.habitId).get();
+    int progress = documentSnapshot.data['progress'];
+    completed ? progress = progress + 1 : progress = progress - 1;
+    habitCollection.document(task.habitId).updateData({'progress': progress});
+  }
+
   //Check Habits
   Future checkHabitsForNewTasks(DateTime today) async {
-    final DateTime tomorrow = today.add(new Duration(days: 1));
-    final String tomorrowDay = DateFormat('EEEE').format(tomorrow);
+    final String day = DateFormat('EEEE').format(today);
 
     List<Task> listOfTasks = [];
     await taskCollection
@@ -109,32 +130,28 @@ class DatabaseService {
         .getDocuments()
         .then((snapshot) {
       List<Habit> listOfHabits = _habitsFromSnapshot(snapshot);
-
+      print(DayInWeek);
       for (Habit habit in listOfHabits) {
-        if (habit.activeDays.contains(tomorrowDay)) {
+        if (habit.activeDays.contains(day)) {
           if (listOfTasks.length == 0) {
             addTask(habit: habit);
             continue;
           }
           if ((listOfTasks.singleWhere(
                   (task) =>
-                      task.habitId == habit.id && task.date.day == tomorrow.day,
+                      task.habitId == habit.id && task.date.day == today.day,
                   orElse: () => null)) ==
               null) {
             addTask(habit: habit);
-          } else {
-            //Habit task doesn't exsist
-
-          }
+          } else {}
         }
       }
     });
   }
 
   Future checkOverdooTasks(DateTime today) async {
-    DateTime weekAgo = today.subtract(new Duration(days: 1));
-    DateTime weekAgoAtZero =
-        DateTime(weekAgo.year, weekAgo.month, weekAgo.day, 0, 0, 0, 0);
+    DateTime todayAtZero =
+        DateTime(today.year, today.month, today.day, 0, 0, 0, 0);
     List<Task> listOfTasks = [];
     await taskCollection
         .where('userId', isEqualTo: uid)
@@ -142,11 +159,13 @@ class DatabaseService {
         .then((snapshot) {
       listOfTasks = _tasksFromSnapshot(snapshot);
     });
-
+    print("Today at ZERO is: " + todayAtZero.toString());
     for (Task task in listOfTasks) {
-      if (task.date.isBefore(weekAgoAtZero)) {
+      if (task.date.isBefore(todayAtZero)) {
         print("OVERDOO Task: " + task.name);
         Firestore.instance.collection('Tasks').document(task.id).delete();
+      } else {
+        print(task.name + " date is OK");
       }
     }
   }
@@ -155,13 +174,21 @@ class DatabaseService {
     await Firestore.instance.collection('Tasks').add({
       'userId': uid,
       'habitId': habit.id,
-      'date': DateTime.now().add(new Duration(days: 1)),
-      'name': habit.name + " Task",
+      'date': DateTime.now(),
+      'name': habit.name,
       'description': habit.description,
       'checklist': [],
+      'notes': "",
       'edited': false,
       'completed': false
     });
+
+    checkHabitsForNewTasks(DateTime.now());
+  }
+
+  Future updateTaskChecklist(List<CheckItem> checklist, String taskId) {
+    //Map data = {'Banana': {'checked':true,'text'}};
+    //taskCollection.document(taskId).updateData({'checklist': data});
   }
 }
 

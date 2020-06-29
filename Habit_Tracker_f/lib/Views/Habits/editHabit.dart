@@ -68,183 +68,188 @@ class _EditHabitViewState extends State<EditHabitView> {
           backgroundColor: Colors.green,
           title: Text(widget.title),
         ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Flexible(
-              child: Container(
-                width: width * 1,
-                padding: EdgeInsets.all(20.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Expanded(
-                          child: TextField(
-                            controller: _controllerName,
-                            textCapitalization: TextCapitalization.sentences,
-                            cursorColor: Colors.green,
-                            maxLength: 20,
-                            style: TextStyle(
-                                fontSize: width * 0.05, color: Colors.black),
-                            keyboardType: TextInputType.text,
-                            maxLines: 1,
-                            textAlign: TextAlign.start,
-                            decoration: InputDecoration(
-                              hintText: 'Give your habit a name',
-                              enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.green),
+        body: SingleChildScrollView(
+          child: Container(
+            width: width * 1,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Container(
+                  width: width * 1,
+                  padding: EdgeInsets.all(width * 0.055),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Expanded(
+                            child: TextField(
+                              controller: _controllerName,
+                              textCapitalization: TextCapitalization.sentences,
+                              cursorColor: Colors.green,
+                              maxLength: 20,
+                              style: TextStyle(
+                                  fontSize: width * 0.05, color: Colors.black),
+                              keyboardType: TextInputType.text,
+                              maxLines: 1,
+                              textAlign: TextAlign.start,
+                              decoration: InputDecoration(
+                                hintText: 'Give your habit a name',
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.green),
+                                ),
+                                focusedBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.green),
+                                ),
+                                border: UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.green),
+                                ),
+                                contentPadding:
+                                    EdgeInsets.symmetric(vertical: 5),
                               ),
-                              focusedBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.green),
-                              ),
-                              border: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.green),
-                              ),
-                              contentPadding: EdgeInsets.symmetric(vertical: 5),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 15.0,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Expanded(
-                          child: TextField(
-                            controller: _controllerDesc,
-                            textCapitalization: TextCapitalization.sentences,
-                            cursorColor: Colors.green,
-                            maxLength: 40,
-                            style: TextStyle(
-                                fontSize: width * 0.04, color: Colors.black),
-                            keyboardType: TextInputType.text,
-                            minLines: 1,
-                            maxLines: 5,
-                            textAlign: TextAlign.start,
-                            decoration: InputDecoration(
-                              hintText: 'Describe your habit',
-                              enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.green),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 15.0,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Expanded(
+                            child: TextField(
+                              controller: _controllerDesc,
+                              textCapitalization: TextCapitalization.sentences,
+                              cursorColor: Colors.green,
+                              maxLength: 40,
+                              style: TextStyle(
+                                  fontSize: width * 0.04, color: Colors.black),
+                              keyboardType: TextInputType.text,
+                              minLines: 1,
+                              maxLines: 5,
+                              textAlign: TextAlign.start,
+                              decoration: InputDecoration(
+                                hintText: 'Describe your habit',
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.green),
+                                ),
+                                focusedBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.green),
+                                ),
+                                border: UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.green),
+                                ),
+                                contentPadding:
+                                    EdgeInsets.symmetric(vertical: 5),
                               ),
-                              focusedBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.green),
-                              ),
-                              border: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.green),
-                              ),
-                              contentPadding: EdgeInsets.symmetric(vertical: 5),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 20.0,
-                    ),
-                    Text(
-                      "Reacurrance: ",
-                      style: TextStyle(color: Colors.grey[700]),
-                    ),
-                    SizedBox(
-                      height: 15.0,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: daysInWeek.map((day) {
-                        return InkWell(
-                          splashColor: Colors.transparent,
-                          highlightColor: Colors.transparent,
-                          child: Padding(
-                            padding: EdgeInsets.all(2.0),
-                            child: Container(
-                              width: width * 0.11,
-                              height: width * 0.11,
+                        ],
+                      ),
+                      SizedBox(
+                        height: 20.0,
+                      ),
+                      Text(
+                        "Reacurrance: ",
+                        style: TextStyle(color: Colors.grey[700]),
+                      ),
+                      SizedBox(
+                        height: 15.0,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: daysInWeek.map((day) {
+                          return InkWell(
+                            splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            child: Padding(
+                              padding: EdgeInsets.all(2.0),
                               child: Container(
-                                decoration: new BoxDecoration(
-                                    color: widget.habit.activeDays.contains(
-                                            daysInWeek[day.index].name)
-                                        ? Colors.green
-                                        : Colors.white,
-                                    shape: BoxShape.rectangle,
-                                    border: Border.all(
-                                        color: Colors.green,
-                                        width: width * 0.005),
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(8.0))),
-                                child: Center(
-                                    child: Text(
-                                  daysInWeek[day.index].letter,
-                                  style: TextStyle(
+                                width: width * 0.11,
+                                height: width * 0.11,
+                                child: Container(
+                                  decoration: new BoxDecoration(
                                       color: widget.habit.activeDays.contains(
                                               daysInWeek[day.index].name)
-                                          ? Colors.white
-                                          : Colors.grey[700],
-                                      fontWeight: FontWeight.bold),
-                                )),
+                                          ? Colors.green
+                                          : Colors.white,
+                                      shape: BoxShape.rectangle,
+                                      border: Border.all(
+                                          color: Colors.green,
+                                          width: width * 0.005),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(8.0))),
+                                  child: Center(
+                                      child: Text(
+                                    daysInWeek[day.index].letter,
+                                    style: TextStyle(
+                                        color: widget.habit.activeDays.contains(
+                                                daysInWeek[day.index].name)
+                                            ? Colors.white
+                                            : Colors.grey[700],
+                                        fontWeight: FontWeight.bold),
+                                  )),
+                                ),
                               ),
                             ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                    SizedBox(
-                      height: width * 0.066,
-                    ),
-                    LinearProgressIndicator(
-                      value:
-                          ((widget.habit.progress * 100) / widget.habit.goal) /
-                              100,
-                      backgroundColor: Colors.grey[100],
-                      valueColor: AlwaysStoppedAnimation(
-                        Colors.green,
+                          );
+                        }).toList(),
                       ),
-                    ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              (((widget.habit.progress * 100) /
-                                              widget.habit.goal)
-                                          .round())
-                                      .toString() +
-                                  "%",
-                              style: TextStyle(
-                                  color: Colors.grey[400],
-                                  fontSize: height * 0.022),
-                            ),
-                          ],
+                      SizedBox(
+                        height: width * 0.066,
+                      ),
+                      LinearProgressIndicator(
+                        value: ((widget.habit.progress * 100) /
+                                widget.habit.goal) /
+                            100,
+                        backgroundColor: Colors.grey[100],
+                        valueColor: AlwaysStoppedAnimation(
+                          Colors.green,
                         ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              (widget.habit.progress).toString() +
-                                  " / " +
-                                  widget.habit.goal.toString() +
-                                  " Tasks",
-                              style: TextStyle(
-                                  color: Colors.grey[400],
-                                  fontSize: height * 0.022),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                (((widget.habit.progress * 100) /
+                                                widget.habit.goal)
+                                            .round())
+                                        .toString() +
+                                    "%",
+                                style: TextStyle(
+                                    color: Colors.grey[400],
+                                    fontSize: height * 0.022),
+                              ),
+                            ],
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                (widget.habit.progress).toString() +
+                                    " / " +
+                                    widget.habit.goal.toString() +
+                                    " Tasks",
+                                style: TextStyle(
+                                    color: Colors.grey[400],
+                                    fontSize: height * 0.022),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            )
-          ],
+              ],
+            ),
+          ),
         ),
       ),
     );

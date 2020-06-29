@@ -65,15 +65,6 @@ class _MenuState extends State<Menu> {
   void pageChanged(int index) {
     setState(() {
       bottomSelectedIndex = index;
-      if (index == 0) {
-        bottomSelectedColor = Colors.green;
-      } else if (index == 1) {
-        bottomSelectedColor = Colors.blue;
-      } else if (index == 2) {
-        bottomSelectedColor = Colors.red;
-      } else if (index == 3) {
-        bottomSelectedColor = Colors.yellow;
-      }
     });
   }
 
@@ -92,7 +83,7 @@ class _MenuState extends State<Menu> {
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: bottomSelectedIndex,
-        selectedItemColor: bottomSelectedColor,
+        selectedItemColor: Colors.green,
         //color: Colors.blue,
         backgroundColor: Colors.white,
         //buttonBackgroundColor: Colors.blue,

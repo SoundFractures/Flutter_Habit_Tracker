@@ -22,7 +22,7 @@ class _ProfileViewState extends State<ProfileView> {
                 pinned: true,
                 snap: true,
                 floating: true,
-                backgroundColor: Colors.yellow,
+                backgroundColor: Colors.green,
                 expandedHeight: 150.0,
                 actions: <Widget>[],
                 flexibleSpace: FlexibleSpaceBar(
