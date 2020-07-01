@@ -16,17 +16,17 @@ class EditTaskView extends StatefulWidget {
 
 class _EditTaskViewState extends State<EditTaskView> {
   TextEditingController _controllerCheckItem = TextEditingController();
+  TextEditingController _controllerNote = TextEditingController();
   double floatButtonOpacity = 0;
-  List<CheckItem> checklist = [
-    CheckItem("Wash clothes", true),
-    CheckItem("Clean the dishes", true),
-    CheckItem("Walk the Dog", true),
-  ];
+  List<CheckItem> checklist = [];
   @override
   void initState() {
     super.initState();
     if (widget.task != null) {
-      //Set values
+      _controllerNote.text = widget.task.description;
+      if (widget.task.checklist.isNotEmpty) {
+        checklist = widget.task.checklist;
+      }
     }
   }
 
@@ -38,8 +38,8 @@ class _EditTaskViewState extends State<EditTaskView> {
     return SafeArea(
       child: WillPopScope(
         onWillPop: () async {
-          //DatabaseService(uid: user.uid)
-          //   .updateTaskChecklist(checklist, widget.task.id);
+          DatabaseService(uid: user.uid)
+              .updateTask(widget.task.id, _controllerNote.text, checklist);
           return true;
         },
         child: Scaffold(
@@ -53,7 +53,8 @@ class _EditTaskViewState extends State<EditTaskView> {
                 mini: true,
                 onPressed: () {
                   setState(() {
-                    checklist.add(CheckItem(_controllerCheckItem.text, false));
+                    checklist.add(CheckItem(
+                        text: _controllerCheckItem.text, checked: false));
                     _controllerCheckItem.text = "";
                     floatButtonOpacity = 0;
                     FocusScope.of(context).unfocus();
@@ -88,6 +89,7 @@ class _EditTaskViewState extends State<EditTaskView> {
                         children: <Widget>[
                           Expanded(
                             child: TextField(
+                              controller: _controllerNote,
                               textCapitalization: TextCapitalization.sentences,
                               cursorColor: Colors.green,
                               maxLength: 200,

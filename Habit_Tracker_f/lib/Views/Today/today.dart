@@ -49,14 +49,16 @@ class _TodayViewState extends State<TodayView> {
                         delegate: SliverChildBuilderDelegate((context, index) {
                       return InkWell(
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => EditTaskView(
-                                      title: listOfTasks[index].name,
-                                      task: listOfTasks[index],
-                                    )),
-                          );
+                          listOfTasks[index].completed == false
+                              ? Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => EditTaskView(
+                                            title: listOfTasks[index].name,
+                                            task: listOfTasks[index],
+                                          )),
+                                )
+                              : null;
                         },
                         child: TaskCardView(task: listOfTasks[index]),
                       );

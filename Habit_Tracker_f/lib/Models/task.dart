@@ -1,3 +1,5 @@
+import 'package:Habit_Tracker_f/Models/checkItem.dart';
+
 class Task {
   String id;
   String userId;
@@ -5,7 +7,7 @@ class Task {
   DateTime date;
   String name;
   String description;
-  List<String> checklist;
+  List<CheckItem> checklist;
   bool edited;
   bool completed;
 

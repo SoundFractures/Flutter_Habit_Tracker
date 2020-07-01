@@ -1,18 +1,14 @@
-import 'dart:convert';
-
-import 'package:Habit_Tracker_f/Views/Core/dayInWeek.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:Habit_Tracker_f/Models/habit.dart';
 import 'package:Habit_Tracker_f/Models/task.dart';
-import 'package:Habit_Tracker_f/Models/user.dart';
 import 'package:Habit_Tracker_f/Models/checkItem.dart';
 import 'package:intl/intl.dart';
 
 class DatabaseService {
   //User ID
   final String uid;
-
-  DatabaseService({this.uid});
+  final Task checkTask;
+  DatabaseService({this.uid, this.checkTask});
 
   final CollectionReference habitCollection =
       Firestore.instance.collection('Habits');
@@ -90,10 +86,31 @@ class DatabaseService {
           habitId: doc.data['habitId'],
           userId: doc.data['userId'],
           date: d,
-          checklist: List.from(doc.data['checklist']),
+          checklist: _checkListFromSnapshot(doc),
           completed: doc.data['completed'],
           edited: doc.data['edited']);
     }).toList();
+  }
+
+  //Task Checklist
+  List<CheckItem> _checkListFromSnapshot(DocumentSnapshot snapshot) {
+    List<dynamic> list = snapshot.data['checklist'];
+    if (list == null) {
+      return [];
+    } else {
+      return list.map((item) {
+        return CheckItem(text: item['text'], checked: item['checked']);
+      }).toList();
+    }
+  }
+
+  //Update Task
+  Future updateTask(String id, String note, List<CheckItem> checklist) async {
+    Map<String, dynamic> list;
+
+    list = {'items': checklist.map((e) => e.toJson()).toList()};
+
+    taskCollection.document(id).updateData({'checklist': list['items']});
   }
 
   Stream<List<Task>> get tasks {
@@ -110,6 +127,7 @@ class DatabaseService {
         await habitCollection.document(task.habitId).get();
     int progress = documentSnapshot.data['progress'];
     completed ? progress = progress + 1 : progress = progress - 1;
+    progress < 0 ? progress = 0 : null;
     habitCollection.document(task.habitId).updateData({'progress': progress});
   }
 
@@ -130,7 +148,7 @@ class DatabaseService {
         .getDocuments()
         .then((snapshot) {
       List<Habit> listOfHabits = _habitsFromSnapshot(snapshot);
-      print(DayInWeek);
+
       for (Habit habit in listOfHabits) {
         if (habit.activeDays.contains(day)) {
           if (listOfTasks.length == 0) {
@@ -159,13 +177,10 @@ class DatabaseService {
         .then((snapshot) {
       listOfTasks = _tasksFromSnapshot(snapshot);
     });
-    print("Today at ZERO is: " + todayAtZero.toString());
+
     for (Task task in listOfTasks) {
       if (task.date.isBefore(todayAtZero)) {
-        print("OVERDOO Task: " + task.name);
         Firestore.instance.collection('Tasks').document(task.id).delete();
-      } else {
-        print(task.name + " date is OK");
       }
     }
   }
@@ -176,7 +191,6 @@ class DatabaseService {
       'habitId': habit.id,
       'date': DateTime.now(),
       'name': habit.name,
-      'description': habit.description,
       'checklist': [],
       'notes': "",
       'edited': false,
@@ -185,108 +199,4 @@ class DatabaseService {
 
     checkHabitsForNewTasks(DateTime.now());
   }
-
-  Future updateTaskChecklist(List<CheckItem> checklist, String taskId) {
-    //Map data = {'Banana': {'checked':true,'text'}};
-    //taskCollection.document(taskId).updateData({'checklist': data});
-  }
 }
-
-/*
-
-*/
-//Get All habits: 1
-//Check if habit has "today" in activeDays: 1
-//  Check if habit task is already created && Check if habit date is equal to this date (then don't create task): 0
-//
-
-//Check if habit has "tomorrow" in activeDays: 1
-
-//ds.reference.updateData({'iconCode': iconCode});
-
-/*
-for (DocumentSnapshot doc in snapshot.documents) {
-        Timestamp t = doc.data['date'];
-        DateTime d = t.toDate();
-        Task task = Task(
-            id: doc.documentID,
-            name: doc.data['name'],
-            description: doc.data['description'],
-            habitId: doc.data['habitId'],
-            userId: doc.data['userId'],
-            date: d,
-            checklist: doc.data['checklist'],
-            completed: doc.data['completed'],
-            edited: doc.data['edited']);
-        listOfTasks.add(task);
-      }
-
-
-Future checkForOverdooTasks(DateTime dateTime) {
-    print(dateTime);
-  }
-
-  Future addTask({Habit habit}) async {
-    await Firestore.instance.collection('Tasks').add({
-      'userId': uid,
-      'habitId': habit.id,
-      'date': DateTime.now(),
-      'name': habit.name + " #" + (habit.progress + 1).toString(),
-      'description': habit.description,
-      'checklist': [],
-      'edited': false,
-      'completed': false
-    });
-  }
-
-  
-
-  //Edit Task (On TomorrowView)
-  Future checkHabits(DateTime today) async {
-    checkForOverdooTasks(today.subtract(new Duration(days: 1)));
-    //Settings Tomorrow and Today
-    String todayDay = DateFormat('EEEE').format(today);
-    DateTime tomorrow = today.add(new Duration(days: 1));
-    String tomorrowDay =
-        DateFormat('EEEE').format(today.add(new Duration(days: 1)));
-    //
-    //Getting all Tasks
-    List<Task> listOfTasks = [];
-    await Firestore.instance
-        .collection('Tasks')
-        .where('userId', isEqualTo: uid)
-        .getDocuments()
-        .then((snapshot) {
-      List<Task> listofTasks1 = _tasksFromSnapshot(snapshot);
-      print(listofTasks1.length);
-    });
-    await Firestore.instance
-        .collection('Habits')
-        .where('userId', isEqualTo: uid)
-        .getDocuments()
-        .then((snapshot) {
-      List<Habit> listOfHabits = _habitsFromSnapshot(snapshot);
-
-      for (Habit habit in listOfHabits) {
-        if (habit.activeDays.contains(todayDay)) {
-          //Check if user-edited task in present for that habit, if not create a default task
-
-        }
-        //Create
-        else if (habit.activeDays.contains(tomorrowDay)) {
-          if (listOfTasks.length == 0) {
-            print(habit.name);
-            //addTask(habit: habit);
-          }
-          for (Task task in listOfTasks) {
-            if (task.date.day == tomorrow.day && task.habitId == habit.id) {
-            } else {
-              print(habit.name);
-              //addTask(habit: habit);
-            }
-          }
-        }
-      }
-    });
-  }
-*/
