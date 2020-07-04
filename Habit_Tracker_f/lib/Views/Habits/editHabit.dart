@@ -200,6 +200,13 @@ class _EditHabitViewState extends State<EditHabitView> {
                       SizedBox(
                         height: width * 0.066,
                       ),
+                      Text(
+                        "Progress: ",
+                        style: TextStyle(color: Colors.grey[700]),
+                      ),
+                      SizedBox(
+                        height: 15.0,
+                      ),
                       LinearProgressIndicator(
                         value: ((widget.habit.progress * 100) /
                                 widget.habit.goal) /
